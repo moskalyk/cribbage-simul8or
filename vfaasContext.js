@@ -2,7 +2,10 @@ db = {
     kv: () => {
         return {
             put: async (key, v) => {this[key] = v; return true},
-            get: async (key) => {return JSON.stringify({v: this[key]})}
+            get: async (key) => {
+                if(this[key] == undefined) return JSON.stringify({status: false})
+                else return JSON.stringify({v: this[key]})
+            }
         }
     }
 }
