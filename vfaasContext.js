@@ -4,7 +4,7 @@ db = {
             put: async (key, v) => {this[key] = v; return true},
             get: async (key) => {
                 if(this[key] == undefined) return JSON.stringify({status: false})
-                else return JSON.stringify({v: this[key]})
+                else return JSON.stringify({v: this[key], status: true})
             }
         }
     }

@@ -7,6 +7,8 @@ const goFirst = require('./serverless/code/568678.js')
 const addPlayerScore = require('../cribbage/app/serverless/code/755005.js')
 const context = require('./vfaasContext.js')
 const shuffle = require('./serverless/code/994920.js')
+const dealCards = require('./serverless/code/994949.js')
+const dealToCrib = require('./serverless/code/259942.js')
 
 ;(async () => {
     
@@ -42,4 +44,29 @@ const shuffle = require('./serverless/code/994920.js')
     
     // shuffle
     console.log('shuffled', await shuffle.serverless.apply(context, [null,JSON.parse(otp).ref, player2, JSON.parse(JSON.parse(getLink).message_link_two).v]))
+    
+    const player1Hand = []
+    const player2Hand = []
+    const crib = []
+    
+    for(let i = 0; i < 2; i ++) {
+        console.log('deal card')
+        player2Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
+        console.log('deal crib')
+        crib.push(await dealToCrib.serverless.apply(context, [null, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2, 2]))
+        player1Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
+    }
+    
+    console.log('--- dealing rest ---')
+    
+    for(let i = 0; i < 3; i++){
+        console.log('deal card')
+        player2Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
+        player1Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
+    }
+    
+    console.log(player2Hand)
+    console.log(player1Hand)
+    console.log(crib)
+    
 })()
