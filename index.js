@@ -9,6 +9,7 @@ const context = require('./vfaasContext.js')
 const shuffle = require('./serverless/code/994920.js')
 const dealCards = require('./serverless/code/994949.js')
 const dealToCrib = require('./serverless/code/259942.js')
+const withdrawToCrib = require('./serverless/code/626516.js')
 
 ;(async () => {
     
@@ -51,7 +52,7 @@ const dealToCrib = require('./serverless/code/259942.js')
     
     for(let i = 0; i < 2; i ++) {
         console.log('deal card')
-        player2Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
+        player2Hand.push(await dealCards.serverless.apply(context, [null, player2, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
         console.log('deal crib')
         crib.push(await dealToCrib.serverless.apply(context, [null, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2, 2]))
         player1Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
@@ -61,7 +62,7 @@ const dealToCrib = require('./serverless/code/259942.js')
     
     for(let i = 0; i < 3; i++){
         console.log('deal card')
-        player2Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
+        player2Hand.push(await dealCards.serverless.apply(context, [null, player2, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
         player1Hand.push(await dealCards.serverless.apply(context, [null, host, 2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2]))
     }
     
@@ -69,4 +70,14 @@ const dealToCrib = require('./serverless/code/259942.js')
     console.log(player1Hand)
     console.log(crib)
     
+    // withdraw to crib
+    const withd1 = player2Hand[Math.floor(Math.random()*player2Hand.length)]
+    const withd2 = player1Hand[Math.floor(Math.random()*player1Hand.length)]
+    
+    console.log(withd1)
+    console.log(withd2)
+    
+    // module.exports.serverless = async function (game_id, player_id, card, message_link_two, message_link, invited_patp, player_count) {
+    console.log(await withdrawToCrib.serverless.apply(context, [null, player2, withd1, JSON.parse(JSON.parse(getLink).message_link_two).v, JSON.parse(otp).ref, player2, 2]))
+    console.log(await withdrawToCrib.serverless.apply(context, [null, host, withd2, JSON.parse(JSON.parse(getLink).message_link_two).v, JSON.parse(otp).ref, player2, 2]))
 })()

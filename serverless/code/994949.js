@@ -24,7 +24,7 @@ module.exports.serverless = async function (game_id, player_id, player_count, me
 
                     const index = Math.floor(Math.random()*deck.length);
 
-                    await db.kv('/data').put(game_id+':hand:' + player_id, [cards[index]]);
+                    await db.kv('/data').put(game_id+':hand_dealt:' + player_id, [cards[index]]);
 
                     cards.splice(index, 1)
                     await db.kv('/data').put(game_id+":dealing", cards);
@@ -32,7 +32,8 @@ module.exports.serverless = async function (game_id, player_id, player_count, me
                     /* semaphore */
                     await db.kv('/data').put(game_id+":dealing"+":"+"selecting", false);
                     sp = await db.kv('/data').get(game_id+":dealing"+":"+"selecting");
-                    return cards[index]
+                    
+                    return deck[index]
                 } else if(player_count == 2){
                     const deck = JSON.parse(await db.kv('/data').get(game_id+":dealing")).v;
                     // console.log(deck)
@@ -42,7 +43,14 @@ module.exports.serverless = async function (game_id, player_id, player_count, me
                     if(JSON.parse(hand).status == true){
                         const newHand = JSON.parse(hand).v
                         newHand.push(cards[index])
+                        const invHand = await db.kv('/data').get(game_id+':hand_dealt:' + invited_patp, newHand);
                         await db.kv('/data').put(game_id+':hand_dealt:' + player_id, newHand);
+
+                        if(newHand.length == 5 && JSON.parse(invHand).status && JSON.parse(invHand).v.length == 5){
+                            await db.kv('/data').put(game_id+":game_state", 5);
+                        }
+                        cards.splice(index, 1)
+                        await db.kv('/data').put(game_id+":dealing", cards);
                     } else {
                         await db.kv('/data').put(game_id + ':hand_dealt:' + player_id, [cards[index]]);
                         cards.splice(index, 1)
@@ -51,10 +59,8 @@ module.exports.serverless = async function (game_id, player_id, player_count, me
 
                     await db.kv('/data').put(game_id+":dealing"+":"+"selecting", false);
                     sp = await db.kv('/data').get(game_id+":dealing"+":"+"selecting");
-                    console.log('index', index);
-                    console.log('deck', cards[index]);
-                    
-                    return cards[index]
+                    console.log(deck[index]);
+                    return deck[index]
                 } else {
                     const deck = JSON.parse(await db.kv('/data').get(game_id+":dealing")).v;
                     const index = deck[Math.floor(Math.random()*deck.length)];
@@ -71,8 +77,8 @@ module.exports.serverless = async function (game_id, player_id, player_count, me
                     await db.kv('/data').put(game_id+":dealer_choice"+":"+"selecting", false);
                     sp = await db.kv('/data').get(game_id+":dealer_choice"+":"+"selecting");
 
-                    console.log(cards[index]);
-                    return cards[index]
+                    console.log(deck[index]);
+                    return deck[index]
                 }
             } else {
                 await db.kv('/data').put(game_id+":game_state", 5);
