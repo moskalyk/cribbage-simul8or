@@ -10,6 +10,7 @@ const shuffle = require('./serverless/code/994920.js')
 const dealCards = require('./serverless/code/994949.js')
 const dealToCrib = require('./serverless/code/259942.js')
 const withdrawToCrib = require('./serverless/code/626516.js')
+const returnAccessCard = require('./serverless/code/86318.js')
 
 ;(async () => {
     
@@ -40,8 +41,11 @@ const withdrawToCrib = require('./serverless/code/626516.js')
     console.log(JSON.parse(JSON.parse(getLink).message_link_two))
     console.log(await shuffleAndAssign.serverless.apply(context, [null, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v]))
 
-    console.log('card1',await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2]))
-    console.log('card2',await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2]))
+    const deal1 = await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2])
+    const deal2 = await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2])
+    
+    console.log('card1', deal1)
+    console.log('card2', deal2)
     
     // shuffle
     console.log('shuffled', await shuffle.serverless.apply(context, [null,JSON.parse(otp).ref, player2, JSON.parse(JSON.parse(getLink).message_link_two).v]))
@@ -80,4 +84,15 @@ const withdrawToCrib = require('./serverless/code/626516.js')
     // module.exports.serverless = async function (game_id, player_id, card, message_link_two, message_link, invited_patp, player_count) {
     console.log(await withdrawToCrib.serverless.apply(context, [null, player2, withd1, JSON.parse(JSON.parse(getLink).message_link_two).v, JSON.parse(otp).ref, player2, 2]))
     console.log(await withdrawToCrib.serverless.apply(context, [null, host, withd2, JSON.parse(JSON.parse(getLink).message_link_two).v, JSON.parse(otp).ref, player2, 2]))
+    
+    //module.exports.serverless = async function (game_id, player_ids, player_dealer, message_link, invited_patp, message_link_two) {
+    let dealer;
+    
+    if(deal2 > deal1) {
+        dealer = player2
+    } else {
+        dealer = host
+    }
+    
+    console.log(await returnAccessCard.serverless.apply(context, [null, [host, player2], dealer, JSON.parse(otp).ref, player2,JSON.parse(JSON.parse(getLink).message_link_two).v]))
 })()
