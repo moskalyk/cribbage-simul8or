@@ -6,6 +6,7 @@ const shuffleAndAssign = require('./serverless/code/179640.js'); const messageLi
 const goFirst = require('./serverless/code/568678.js')
 const addPlayerScore = require('../cribbage/app/serverless/code/755005.js')
 const context = require('./vfaasContext.js')
+const shuffle = require('./serverless/code/994920.js')
 
 ;(async () => {
     
@@ -39,4 +40,6 @@ const context = require('./vfaasContext.js')
     console.log('card1',await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2]))
     console.log('card2',await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2]))
     
+    // shuffle
+    console.log('shuffled', await shuffle.serverless.apply(context, [null,JSON.parse(otp).ref, player2, JSON.parse(JSON.parse(getLink).message_link_two).v]))
 })()
