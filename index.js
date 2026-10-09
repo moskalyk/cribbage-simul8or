@@ -2,8 +2,8 @@ const { f } = require('./serverless/code/62482.js')
 const createOneTimeLink = require('./serverless/code/793564.js')
 const acceptOTL = require('./serverless/code/238580.js')
 const authApproved = require('./serverless/code/820768.js')
-
-const goFirst = require('../cribbage/app/serverless/code/568678.js')
+const shuffleAndAssign = require('./serverless/code/179640.js'); const messageLinkSecret = require('./serverless/code/206098.js');
+const goFirst = require('./serverless/code/568678.js')
 const addPlayerScore = require('../cribbage/app/serverless/code/755005.js')
 const context = require('./vfaasContext.js')
 
@@ -30,10 +30,13 @@ const context = require('./vfaasContext.js')
     console.log(approved)
     
     if(approved) console.log('both authenticated')
-    
+    const getLink = await messageLinkSecret.serverless.apply(context, [host, player2, JSON.parse(otp).ref, password1, password2])
+
     // find dealer card
-    // console.log(await goFirst.serverless.apply(context, [null, '~zod', '~ten', [1,2,5], [7,3,3], 2]))
+    console.log(JSON.parse(JSON.parse(getLink).message_link_two))
+    console.log(await shuffleAndAssign.serverless.apply(context, [null, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v]))
+
+    console.log('card1',await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2]))
+    console.log('card2',await goFirst.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref,JSON.parse(JSON.parse(getLink).message_link_two).v, 2]))
     
-    // test
-    // console.log(await f.apply(context, [null, '~zod', host, 'password1', 'password2']))
 })()

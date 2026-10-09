@@ -69,7 +69,6 @@ module.exports.serverless = async function (hostPatP, message_link, myPatP) {
     const message_link_two = makeid(6);
     
     var _ = encrypt(hostPatP, [message_link, message_link_two], 0.01);
-    console.log('mes', message_link+':'+myPatP)
     await db.kv('/data').put(message_link+':'+myPatP, message_link_two);
 
     console.log(JSON.stringify({
