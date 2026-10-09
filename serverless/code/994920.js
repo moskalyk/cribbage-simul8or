@@ -15,6 +15,7 @@ module.exports.serverless = async function (game_id, message_link, invited_patp,
                 let j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
+            return array
         }
         
         await db.kv('/data').put(game_id+":dealing", shuffle(cards));
