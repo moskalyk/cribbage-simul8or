@@ -19,7 +19,7 @@ module.exports.serverless = async function (game_id, player_id, card, message_li
             let ind = splicedHand.indexOf(card)
             splicedHand.splice(ind, 1)
             await db.kv('/data').put(game_id+':hand_dealt:' + player_id, splicedHand);
-            if(JSON.parse(crib).v.push(card).length == 4){
+            if(newHand.length == 4){
                 await db.kv('/data').put(game_id+":game_state", 6);
             }
         }
