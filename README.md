@@ -11,6 +11,6 @@ run the various communication phases of an online cribbage game, occupying authe
 - [x] deal hand
 - [x] withdraw to crib
 - [x] flip and reveal access card
-- [ ] pegging
-- [ ] counting
-- [ ] winning
+- [x] pegging
+- [x] counting
+- [ ] looping & winning
