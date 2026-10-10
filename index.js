@@ -236,7 +236,6 @@ const getScore = require('./serverless/code/452610.js')
         console.log('player2Hand', player2Hand)
     }
     
-    //module.exports.serverless = async function (game_id, player_id, message_link, message_link_two, invited_patp) {
 
     const score1 = await getScore.serverless.apply(context, [null, host, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
     const score2 = await getScore.serverless.apply(context, [null, player2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
