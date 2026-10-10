@@ -9,6 +9,7 @@ module.exports.serverless = async function (game_id, player_id, score) {
         return JSON.stringify({leading: score, trailing: 0})
     } else {
         await db.kv('/data').put(game_id+":score:"+player_id, JSON.stringify({leading: score+JSON.parse(currentScore).v.leading, trailing: JSON.parse(currentScore).v.leading}));
+
         console.log(JSON.stringify({leading: score+JSON.parse(currentScore).v, trailing: 0}));
     }
 };

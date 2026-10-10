@@ -1,7 +1,11 @@
 /*
     pegging
 */
+<<<<<<< HEAD
 module.exports.serverless = async function (placed_card, host_patp, player_id, message_link, message_link_two, invited_patp, /*players*/) {
+=======
+module.exports.serverless = async function (placed_card, host_patp, player_id, message_link_two, invited_patp, /*players*/) {
+>>>>>>> sim-pegging
     game_id = message_link_two;
     
     let gameState = await db.kv('/data').get(game_id+":game_state");
@@ -31,6 +35,7 @@ module.exports.serverless = async function (placed_card, host_patp, player_id, m
             console.log('ann',[...peggingShown.v, placed_card])
             
             await db.kv('/data').put(game_id+':pegging', [...peggingShown.v, placed_card]);
+
             
             if(player_id == invited_patp){
                 await db.kv('/data').put(game_id+':pegging_turn', host_patp);
@@ -40,13 +45,14 @@ module.exports.serverless = async function (placed_card, host_patp, player_id, m
             /* check score */
             const score = await vm('1687').serverless(game_id, hand, null, true);
             /* asign score */
-            console.log('SCORE', score)
+
             if(score > 0) await vm('755005').serverless(game_id, player_id, score);
             
             
             /* check equals 31, assign points */
             const count = await vm('486294').serverless(game_id, hand);
             if(count == 31) await vm('755005').serverless(game_id, player_id, 2);
+
             
             /* check for end of pegging */
             const hostCards = await db.kv('/data').get(game_id+':pegging_hand:' + host_patp);
@@ -60,6 +66,7 @@ module.exports.serverless = async function (placed_card, host_patp, player_id, m
         } else {    
             console.log(false);
             return false;
+
         }
         
         

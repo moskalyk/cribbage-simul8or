@@ -10,6 +10,7 @@ const shuffle = require('./serverless/code/994920.js')
 const dealCards = require('./serverless/code/994949.js')
 const dealToCrib = require('./serverless/code/259942.js')
 const withdrawToCrib = require('./serverless/code/626516.js')
+<<<<<<< HEAD
 const returnAccessCard = require('./serverless/code/86318.js')
 const pegging = require('./serverless/code/239257.js')
 const awardGo = require('./serverless/code/52865.js')
@@ -17,6 +18,11 @@ const canGo = require('./serverless/code/95773.js')
 const cardCanGo = require('./serverless/code/286095.js')
 const peggingReset = require('./serverless/code/539841.js')
 const getScore = require('./serverless/code/452610.js')
+=======
+const pegging = require('./serverless/code/239257.js')
+const awardGo = require('./serverless/code/52865.js')
+const canGo = require('./serverless/code/95773.js')
+>>>>>>> sim-pegging
 
 ;(async () => {
     
@@ -99,6 +105,7 @@ const getScore = require('./serverless/code/452610.js')
     // module.exports.serverless = async function (game_id, player_id, card, message_link_two, message_link, invited_patp, player_count) {
     console.log(await withdrawToCrib.serverless.apply(context, [null, player2, withd1, JSON.parse(JSON.parse(getLink).message_link_two).v, JSON.parse(otp).ref, player2, 2]))
     console.log(await withdrawToCrib.serverless.apply(context, [null, host, withd2, JSON.parse(JSON.parse(getLink).message_link_two).v, JSON.parse(otp).ref, player2, 2]))
+<<<<<<< HEAD
     
     //module.exports.serverless = async function (game_id, player_ids, player_dealer, message_link, invited_patp, message_link_two) {
     let dealer;
@@ -246,4 +253,36 @@ const getScore = require('./serverless/code/452610.js')
     console.log('player', score2)
     
     console.log('time to score');
+=======
+
+    // peggging
+    const peggingCard = player2Hand[Math.floor(Math.random()*player2Hand.length)]
+    const peg2 = player2Hand.indexOf(peggingCard)
+    player2Hand.splice(peg1, 1)
+    
+    // await pegging.serverless.apply(context, [peggingCard, host, player2, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
+
+    // module.exports.serverless = async function (placed_card, host_patp, player_id, message_link_two, invited_patp, /*players*/) {
+    // while(player2Hand.length > 0 && player1Hand.length > 0) {
+        
+        // can go
+        const canGo = await canGo.serverless.apply(context, [null, host, player2, host, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v])
+        console.log(canGo)
+        // if() {
+            
+        // } else {
+        //     //module.exports.serverless = async function (game_id, player_id, host_patp, invited_patp, message_link, invited_patp, message_link_two) {
+
+        //     await awardGo.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref, player2, JSON.parse(JSON.parse(getLink).message_link_two).v,])
+        // }
+        
+        // const peggingCard = player1Hand[Math.floor(Math.random()*player2Hand.length)]
+        // const peg1 = player1Hand.indexOf(peggingCard)
+        // player1Hand.splice(peg1, 1)
+        
+        // await pegging.serverless.apply(context, [peggingCard, host, player2, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
+        
+        
+    // }
+>>>>>>> sim-pegging
 })()
