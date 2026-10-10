@@ -14,6 +14,9 @@ const returnAccessCard = require('./serverless/code/86318.js')
 const pegging = require('./serverless/code/239257.js')
 const awardGo = require('./serverless/code/52865.js')
 const canGo = require('./serverless/code/95773.js')
+const cardCanGo = require('./serverless/code/286095.js')
+const peggingReset = require('./serverless/code/539841.js')
+const getScore = require('./serverless/code/452610.js')
 
 ;(async () => {
     
@@ -108,33 +111,140 @@ const canGo = require('./serverless/code/95773.js')
     
     console.log(await returnAccessCard.serverless.apply(context, [null, [host, player2], dealer, JSON.parse(otp).ref, player2,JSON.parse(JSON.parse(getLink).message_link_two).v]))
 
-    // peggging
+    // peggging // check for dealer
     const peggingCard = player2Hand[Math.floor(Math.random()*player2Hand.length)]
     const peg2 = player2Hand.indexOf(peggingCard)
-    player2Hand.splice(peg1, 1)
+    player2Hand.splice(peg2, 1)
     
     // await pegging.serverless.apply(context, [peggingCard, host, player2, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
-
-    // module.exports.serverless = async function (placed_card, host_patp, player_id, message_link_two, invited_patp, /*players*/) {
-    // while(player2Hand.length > 0 && player1Hand.length > 0) {
-        
+    const wait = (ms) => new Promise((res) => setTimeout(res, ms))
+    
+    while(player2Hand.length > 0 && (player1Hand.length > 0 || player2Hand.length > 0)) {
+        await wait(1000)
         // can go
-        const canGo = await canGo.serverless.apply(context, [null, host, player2, host, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v])
-        console.log(canGo)
-        // if() {
+        const canGoBool = await canGo.serverless.apply(context, [null, host, player2, host, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v])
+        console.log('cango',canGoBool)
+        let loop = true;
+        
+        console.log('player1Hand', player1Hand)
+        console.log('player2Hand', player2Hand)
+        
+        if(!canGoBool) {
+            const canGoBool = await canGo.serverless.apply(context, [null, host, player2, player2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v])
+            console.log('2nd player cant go', canGoBool)
             
-        // } else {
-        //     //module.exports.serverless = async function (game_id, player_id, host_patp, invited_patp, message_link, invited_patp, message_link_two) {
+            if(!canGoBool) {
+                await wait(1000)
 
-        //     await awardGo.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref, player2, JSON.parse(JSON.parse(getLink).message_link_two).v,])
-        // }
+                await awardGo.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref, player2, JSON.parse(JSON.parse(getLink).message_link_two).v,])
+                loop = false
+                //module.exports.serverless = async function (host_patp, player_id, message_link, message_link_two, invited_patp) {
+
+                const pegReset = await peggingReset.serverless.apply(context, [null, host, player2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
+                console.log('RESET',pegReset)
+            }
+            
+        } 
         
-        // const peggingCard = player1Hand[Math.floor(Math.random()*player2Hand.length)]
-        // const peg1 = player1Hand.indexOf(peggingCard)
-        // player1Hand.splice(peg1, 1)
+        if(loop){
+            
+            let hasPlayed = false
+            let indexCardCheck = 0
+            
+            while(!hasPlayed && indexCardCheck < player1Hand.length){
+                console.log('playing card player 1')
+                const peggingCard = player1Hand[indexCardCheck]
+                await wait(1000)
+
+                // module.exports.serverless = async function (game_id, host, invited_patp, player_id, message_link, message_link_two, card) {
+
+                const canGoWithCard = await cardCanGo.serverless.apply(context, [null, host, player2, host, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, peggingCard])
+                console.log('card check')
+                console.log(canGoWithCard)
+                if(!canGoWithCard){ 
+                    indexCardCheck++
+                } else {
+                    hasPlayed = true
+                    const peg1 = player1Hand.indexOf(peggingCard)
+                    player1Hand.splice(peg1, 1)
+                }
+            }
+            
+            console.log('player 1 hand after play',player1Hand)
+            await wait(1000)
+
+            if(hasPlayed == false){
+                // award go
+                
+            } else {
+                // do a round of card checks
+                let indexCardCheck = 0
+                let hasPlayed = false
+
+                 while(!hasPlayed && indexCardCheck < player2Hand.length){
+                    console.log('playing card player 2')
+                            await wait(1000)
+
+                    const peggingCard = player2Hand[indexCardCheck]
+                    
+                    // module.exports.serverless = async function (game_id, host, invited_patp, player_id, message_link, message_link_two, card) {
+
+                    const canGoWithCard = await cardCanGo.serverless.apply(context, [null, host, player2, player2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, peggingCard])
+                    console.log('card check')
+                    console.log(canGoWithCard)
+                    if(!canGoWithCard){ 
+                        indexCardCheck++
+                    } else {
+                        hasPlayed = true
+                        const peg2 = player2Hand.indexOf(peggingCard)
+                        player2Hand.splice(peg2, 1)
+                    }
+                }
+                
+            }
+            
+            console.log('player 2 hand after play',player2Hand)
+            await wait(1000)
+
+            let peggingCard = player1Hand[Math.floor(Math.random()*player1Hand.length)]
+            console.log('last pgcard',peggingCard)
+
+            console.log('pegging')
+
+            const peggingDone1 = await pegging.serverless.apply(context, [peggingCard, host, host, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
+            console.log('pegging 1')
+            await wait(1000)
+            const peg1 = player1Hand.indexOf(peggingCard)
+            player1Hand.splice(peg1, 1)
+            console.log(player1Hand)
+                        
+            peggingCard = player2Hand[Math.floor(Math.random()*player2Hand.length)]
+            
+            console.log('last pgcard',peggingCard)
+
+            const peggingDone2 = await pegging.serverless.apply(context, [peggingCard, host, player2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
+            console.log('pd',peggingDone1, peggingDone2)
+            const peg2 = player2Hand.indexOf(peggingCard)
+            player2Hand.splice(peg2, 1)
+            
+            if(peggingDone1 && peggingDone2){
+                break;
+            } 
         
-        // await pegging.serverless.apply(context, [peggingCard, host, player2, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
-        
-        
-    // }
+        }
+        console.log('player1Hand', player1Hand)
+        console.log('player2Hand', player2Hand)
+    }
+    
+    //module.exports.serverless = async function (game_id, player_id, message_link, message_link_two, invited_patp) {
+
+    const score1 = await getScore.serverless.apply(context, [null, host, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
+    const score2 = await getScore.serverless.apply(context, [null, player2, JSON.parse(otp).ref, JSON.parse(JSON.parse(getLink).message_link_two).v, player2])
+    
+    const currentScore = await db.kv('/data').get(JSON.parse(JSON.parse(getLink).message_link_two).v+":score:"+host);
+    console.log('cs', currentScore)
+    console.log('host', score1)
+    console.log('player', score2)
+    
+    console.log('time to score');
 })()

@@ -9,7 +9,7 @@ module.exports.serverless = async function (game_id, player_id, host_patp, invit
 
     if(JSON.parse(messageLinkTwo).v == message_link_two && JSON.parse(gameState).v == 7){
         await vm('755005').serverless(game_id, player_id, 1);
-        
+        console.log('award go')
         if(player_id == invited_patp){
             await db.kv('/data').put(game_id+':pegging_turn', host_patp);
         } else {
@@ -18,6 +18,7 @@ module.exports.serverless = async function (game_id, player_id, host_patp, invit
         
         const hostCards = await db.kv('/data').get(game_id+':pegging_hand:' + host_patp);
         const invitedCards = await db.kv('/data').get(game_id+':pegging_hand:' + invited_patp);
+        
             
         /* check for end of pegging */
         if((hostCards.length + invitedCards.length) == 0) await db.kv('/data').put(game_id+":game_state", 8);

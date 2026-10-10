@@ -8,11 +8,19 @@ module.exports.serverless = async function (game_id, host, invited_patp, player_
     const messageLinkTwo = await db.kv('/data').get(message_link+':'+invited_patp);
     
     if(JSON.parse(messageLinkTwo).v == message_link_two && JSON.parse(gameState).v == 7){
-            const hand = JSON.parse(await db.kv('/data').get(game_id + ':hand:' + player_id)).v;
-            const placedCards = JSON.parse(await db.kv('/data').get(game_id+':pegging_hand:' + player_id)).v;
+            const hand = JSON.parse(await db.kv('/data').get(game_id + ':hand_dealt:' + player_id)).v;
+            let placedCards = JSON.parse(await db.kv('/data').get(game_id+':pegging_hand:' + player_id));
+            console.log('ha',hand)
+            console.log('ha',placedCards)
             
-            for(let i < 0; i < hand.length; i++){
-                const init = placedCards.includes(hand[i])
+            if(placedCards.status == false){
+                await db.kv('/data').put(game_id+':pegging_hand:' + player_id, []);
+                placedCards = {v: []}
+            }
+            
+            for(let i = 0; i < hand.length; i++){
+                console.log('pc',placedCards)
+                const init = placedCards.v.includes(hand[i])
                 if(init){
                     const index = hand.indexOf(hand[i])
                     hand.splice(index, 1)
@@ -22,14 +30,19 @@ module.exports.serverless = async function (game_id, host, invited_patp, player_
             const leftover = hand
             console.log(leftover)
             
-            const shownCards = await db.kv('/data').get(game_id+':pegging');
+            let shownCards = JSON.parse(await db.kv('/data').get(game_id+':pegging'));
             console.log('shownCards')
             console.log(shownCards)
             
-            const count = await vm('486294').serverless(game_id, JSON.parse(shownCards).v);
-            
-            if(JSON.parse(leftover).v.map(c => {return count + (c % 13) <= 31}).contains(true)){
-                console.log('condo');
+            if(shownCards.status == false){
+                shownCards = {v: []}
+                await db.kv('/data').put(game_id+':pegging:', shownCards);
+            }
+                        console.log(shownCards)
+
+            const count = await vm('486294').serverless(game_id, shownCards.v);
+            console.log('count', count)
+            if(leftover.map(c => {return count + (c % 13) <= 31}).includes(true)){
                 return true
             } else {
                 return false
