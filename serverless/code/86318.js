@@ -21,11 +21,11 @@ module.exports.serverless = async function (game_id, player_ids, player_dealer, 
             await db.kv('/data').put(game_id+":access_card", deck[index]);
             
             if(accessCard%13 == 10){
-                const currentScore = await db.kv('/data').get(game_id+":score:"+player_dealer);
-                if(JSON.parse(currentScore).status == false){
+                const currentScore = JSON.parse(await db.kv('/data').get(game_id+":score:"+player_dealer));
+                if(currentScore.status == false){
                     await db.kv('/data').put(game_id+":score:"+player_dealer, JSON.stringify({leading: 1, trailing: 0}));
                 } else {
-                    await db.kv('/data').put(game_id+":score:"+player_dealer, JSON.stringify({leading: 1+JSON.parse(currentScore).v, trailing: JSON.parse(currentScore).v}));
+                    await db.kv('/data').put(game_id+":score:"+player_dealer, JSON.stringify({leading: 1+currentScore.v.leading, trailing: currentScore.v.leading}));
                 }
             }
 
