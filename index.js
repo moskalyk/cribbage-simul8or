@@ -10,13 +10,10 @@ const shuffle = require('./serverless/code/994920.js')
 const dealCards = require('./serverless/code/994949.js')
 const dealToCrib = require('./serverless/code/259942.js')
 const withdrawToCrib = require('./serverless/code/626516.js')
-<<<<<<< HEAD
 const returnAccessCard = require('./serverless/code/86318.js')
-=======
 const pegging = require('./serverless/code/239257.js')
 const awardGo = require('./serverless/code/52865.js')
 const canGo = require('./serverless/code/95773.js')
->>>>>>> dae1766 (beginning the progression of checking if a user can go when pegging)
 
 ;(async () => {
     
